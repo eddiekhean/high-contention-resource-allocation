@@ -1,0 +1,6 @@
+[submodule "backend/backend"]
+	path = backend/backend
+	url = https://github.com/eddiekhean/high-contention-resource-allocation-backend
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/eddiekhean/high-contention-resource-allocation-frontend
