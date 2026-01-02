@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+rate_limit:
+  enabled: true
+  rps: 5
+  burst: 10
+
+redis:
+  enabled: true
+  addr: localhost:6379
+  password: ""
+  db: 0
+log:
+  level: info
+  format: json
+  output: stdout
