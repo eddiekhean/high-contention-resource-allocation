@@ -22,3 +22,8 @@ type RuntimeRequest struct {
 	EnqueueTick int
 	WaitingTime int
 }
+type ClientArrival struct {
+	ClientID  int    `json:"client_id"`
+	Class     string `json:"class"`
+	FirstTick int    `json:"first_tick"`
+}

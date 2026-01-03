@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"fmt"
 	"math/rand"
 	"sort"
 
@@ -39,6 +40,11 @@ func GenerateClients(
 
 		clients = append(clients, client)
 	}
+	for _, c := range clients {
+		fmt.Printf("ID=%d | class=%s | weight=%.1f\n",
+			c.ID, c.Class, c.Weight,
+		)
+	}
 
 	return clients
 }
@@ -60,16 +66,15 @@ func priorityFromClass(class string) int {
 func GenerateRequests(
 	clients []models.Client,
 	seed int64,
-) []models.Request {
+) ([]models.Request, []models.ClientArrival) {
 
-	rng := rand.New(rand.NewSource(seed + 1)) // +1 để khác GenerateClients
+	rng := rand.New(rand.NewSource(seed + 1))
 
 	var requests []models.Request
 	reqID := 1
 
 	for _, c := range clients {
-		// số request mỗi client (heterogeneous)
-		reqCount := rng.Intn(3) + 1 // 1–3
+		reqCount := rng.Intn(3) + 1
 
 		for i := 0; i < reqCount; i++ {
 			req := models.Request{
@@ -83,7 +88,7 @@ func GenerateRequests(
 		}
 	}
 
-	// sort theo arrival time (giả lập dòng thời gian)
+	// sort theo arrival time
 	sort.Slice(requests, func(i, j int) bool {
 		if requests[i].ArrivalAt != requests[j].ArrivalAt {
 			return requests[i].ArrivalAt < requests[j].ArrivalAt
@@ -91,8 +96,33 @@ func GenerateRequests(
 		return requests[i].ID < requests[j].ID
 	})
 
-	return requests
+	// === BUILD ARRIVAL ORDER ===
+	clientMap := make(map[int]models.Client)
+	for _, c := range clients {
+		clientMap[c.ID] = c
+	}
+
+	seen := make(map[int]bool)
+	var arrivalOrder []models.ClientArrival
+
+	for _, r := range requests {
+		if seen[r.ClientID] {
+			continue
+		}
+
+		c := clientMap[r.ClientID]
+		arrivalOrder = append(arrivalOrder, models.ClientArrival{
+			ClientID:  c.ID,
+			Class:     c.Class,
+			FirstTick: r.ArrivalAt,
+		})
+
+		seen[r.ClientID] = true
+	}
+
+	return requests, arrivalOrder
 }
+
 func gaussianArrival(rng *rand.Rand) int {
 	// Gaussian centered around tick = 50
 	v := int(rng.NormFloat64()*10 + 50)

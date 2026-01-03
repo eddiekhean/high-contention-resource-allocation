@@ -75,3 +75,10 @@ func (s *SlotStore) Release(
 	key := slotKey(simulationID)
 	return s.rdb.IncrBy(ctx, key, int64(n)).Err()
 }
+func (s *SlotStore) Clear(
+	ctx context.Context,
+	simulationID string,
+) error {
+	key := slotKey(simulationID)
+	return s.rdb.Del(ctx, key).Err()
+}

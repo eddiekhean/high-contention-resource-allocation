@@ -9,6 +9,7 @@ import (
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/middleware"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/service"
+	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/storage"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -30,10 +31,11 @@ func main() {
 	logger := utils.SetupLogger(cfg)
 	logger.Info("Configuration loaded successfully")
 
-	simulateService, err := service.NewSimulateService(logger)
-	simulateHandler := handler.NewSimulateHandler(simulateService, logger)
 	//ConnectRedis
 	rdb, err := client.NewRedisClient(&cfg.RedisConfig)
+	store := storage.NewSlotStore(rdb)
+	simulateService := service.NewSimulateService(logger, store)
+	simulateHandler := handler.NewSimulateHandler(simulateService, logger)
 	if err != nil {
 		logger.Fatalf("redis connect failed: %v", err)
 	}
