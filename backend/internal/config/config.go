@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -44,7 +45,7 @@ func LoadFromFile(filename string) (*Config, error) {
 	if err := loadYAMLFile(config, filename); err != nil {
 		return nil, fmt.Errorf("failed to load config from %s: %w", filename, err)
 	}
-
+	overrideFromEnv(config)
 	// Validate configuration
 	if err := validate(config); err != nil {
 		return nil, fmt.Errorf("configuration validation failed: %w", err)
@@ -130,4 +131,23 @@ func validate(config *Config) error {
 		config.Log.MaxAge = 30 // Default 30 days
 	}
 	return nil
+}
+func overrideFromEnv(cfg *Config) {
+	// Redis
+	if addr := os.Getenv("REDIS_ADDR"); addr != "" {
+		cfg.RedisConfig.Addr = addr
+	}
+	if pwd := os.Getenv("REDIS_PASSWORD"); pwd != "" {
+		cfg.RedisConfig.Password = pwd
+	}
+	if db := os.Getenv("REDIS_DB"); db != "" {
+		if v, err := strconv.Atoi(db); err == nil {
+			cfg.RedisConfig.DB = v
+		}
+	}
+
+	// Log
+	if level := os.Getenv("LOG_LEVEL"); level != "" {
+		cfg.Log.Level = level
+	}
 }

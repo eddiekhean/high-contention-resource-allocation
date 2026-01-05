@@ -8,9 +8,10 @@ rate_limit:
 
 redis:
   enabled: true
-  addr: localhost:6379
+  addr: ""
   password: ""
   db: 0
+
 log:
   level: info
   format: json
