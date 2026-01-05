@@ -17,6 +17,13 @@ services:
     volumes:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
+environment:
+  - GIN_MODE=release
 
 volumes:
   redis-data:
