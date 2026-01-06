@@ -50,6 +50,7 @@ func main() {
 		gin.Logger(),
 		gin.Recovery(),
 		middleware.RateLimitMiddleware(&cfg.RateLimit),
+		middleware.CORSMiddleware(),
 	)
 	r.GET("/health", handler.HealthCheck)
 	r.POST("/simulate", simulateHandler.Simulate)
