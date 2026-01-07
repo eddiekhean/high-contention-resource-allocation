@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/models"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/scheduler"
@@ -44,14 +45,15 @@ func (s *SimulateService) RunSimulation(
 	var events []models.Event
 
 	for _, d := range decisions {
+		action := "rejected"
+
 		ok, err := s.slotStore.TryAcquire(ctx, simID, 1)
 		if err != nil {
 			return nil, err
 		}
 
-		action := "allocated"
-		if !ok {
-			action = "rejected"
+		if ok {
+			action = "allocated"
 		}
 
 		events = append(events, models.Event{
@@ -62,10 +64,6 @@ func (s *SimulateService) RunSimulation(
 			Score:     d.Score,
 			Action:    action,
 		})
-
-		if !ok {
-			break
-		}
 	}
 
 	s.slotStore.Clear(ctx, simID)
@@ -73,7 +71,11 @@ func (s *SimulateService) RunSimulation(
 	// 5. BUILD RESPONSE
 	resp := &models.SimulateResponse{
 		Simulation: models.Simulation{
-			ID: simID,
+			ID:            simID,
+			Slots:         input.TotalVouchers,
+			TotalRequests: len(requests),
+			Policy:        "hybrid",
+			CreatedAt:     time.Now(),
 		},
 		ArrivalOrder: arrivalOrder,
 		Events:       events,
