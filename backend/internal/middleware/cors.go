@@ -6,6 +6,8 @@ func CORSMiddleware() gin.HandlerFunc {
 	allowedOrigins := map[string]bool{
 		"http://localhost:5173":                                  true,
 		"https://high-contention-resource-allocation.vercel.app": true,
+		"https://www.eddiekhean.site":                            true,
+		"https://eddiekhean.site/":                               true,
 	}
 
 	return func(c *gin.Context) {
@@ -18,7 +20,6 @@ func CORSMiddleware() gin.HandlerFunc {
 
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
