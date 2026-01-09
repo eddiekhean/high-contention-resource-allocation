@@ -31,6 +31,7 @@ type S3Config struct {
 	SecretKey string `yaml:"secret_key" validate:"required_if=Enabled true"`
 	Bucket    string `yaml:"bucket" validate:"required_if=Enabled true"`
 	Addr      string `yaml:"addr" validate:"required_if=Enabled true"`
+	Endpoint  string `yaml:"endpoint"`
 }
 
 type Config struct {
@@ -157,11 +158,11 @@ func overrideFromEnv(cfg *Config) {
 	if secret := os.Getenv("S3_SECRET_KEY"); secret != "" {
 		cfg.S3.SecretKey = secret
 	}
-	if bucket := os.Getenv("S3_BUCKET"); bucket != "" {
-		cfg.S3.Bucket = bucket
-	}
 	if region := os.Getenv("AWS_REGION"); region != "" {
 		cfg.S3.Addr = region
+	}
+	if endpoint := os.Getenv("S3_ENDPOINT"); endpoint != "" {
+		cfg.S3.Endpoint = endpoint
 	}
 
 	// ===== Postgres =====

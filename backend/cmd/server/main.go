@@ -76,8 +76,9 @@ func main() {
 	}
 	// Repository
 	imageRepository := repository.NewPgImageRepository(pg)
-	imageService := service.NewImageService(imageRepository, &cfg.ImageConfig)
+	imageService := service.NewImageService(imageRepository, &cfg.ImageConfig, s3Client)
 	mazeHandler := handler.NewMazeHandler(imageService, logger)
+
 	// Gin
 	r := gin.New()
 	r.Use(
@@ -93,15 +94,19 @@ func main() {
 	// simulate (generic playground)
 	r.POST("/simulate", simulateHandler.Simulate)
 
+	// Images
+
 	// ===== LEETCODE PAGE =====
 	leetcode := r.Group("/leetcode")
 	{
 		maze := leetcode.Group("/maze")
 		{
-			maze.POST("/match-image", mazeHandler.MatchImage)
-			// future:
-			// maze.POST("/solve", mazeHandler.SolveMaze)
-			// maze.POST("/upload-image", mazeHandler.UploadImage)
+			images := maze.Group("/images")
+			{
+				images.POST("/match", mazeHandler.MatchImage)
+				images.POST("/upload-url", mazeHandler.GetUploadURL)
+				images.POST("", mazeHandler.CommitImage)
+			}
 		}
 	}
 	// HTTP server (QUAN TRỌNG)

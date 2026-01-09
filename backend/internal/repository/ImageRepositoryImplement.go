@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/db"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/domain"
@@ -19,14 +18,63 @@ func (r *PgImageRepository) Create(
 	ctx context.Context,
 	img *domain.Image,
 ) error {
-	return fmt.Errorf("Create not implemented")
+	err := r.db.QueryRow(ctx, `
+		INSERT INTO images (url, dhash)
+		VALUES ($1, $2)
+		RETURNING id, created_at
+	`, img.URL, img.DHash).Scan(&img.ID, &img.CreatedAt)
+
+	return err
 }
 
 func (r *PgImageRepository) FindByID(
 	ctx context.Context,
 	id int64,
 ) (*domain.Image, error) {
-	return nil, fmt.Errorf("FindByID not implemented")
+	var img domain.Image
+	err := r.db.QueryRow(ctx, `
+		SELECT id, url, dhash, created_at
+		FROM images
+		WHERE id = $1
+	`, id).Scan(&img.ID, &img.URL, &img.DHash, &img.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &img, nil
+}
+
+func (r *PgImageRepository) FindByDHash(ctx context.Context, hash uint64) (*domain.Image, error) {
+	var img domain.Image
+	err := r.db.QueryRow(ctx, `
+		SELECT id, url, dhash, created_at
+		FROM images
+		WHERE dhash = $1
+	`, hash).Scan(&img.ID, &img.URL, &img.DHash, &img.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &img, nil
+}
+
+func (r *PgImageRepository) GetAll(ctx context.Context) ([]*domain.Image, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT id, url, dhash, created_at
+		FROM images
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var images []*domain.Image
+	for rows.Next() {
+		var img domain.Image
+		if err := rows.Scan(&img.ID, &img.URL, &img.DHash, &img.CreatedAt); err != nil {
+			return nil, err
+		}
+		images = append(images, &img)
+	}
+	return images, nil
 }
 
 func (r *PgImageRepository) FindByPrefix(

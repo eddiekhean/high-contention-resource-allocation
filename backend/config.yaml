@@ -17,8 +17,11 @@ log:
   format: json
   output: stdout
 s3:
-  enabled: false
+  enabled: true
   addr: "ap-southeast-2"
+  access_key: ""
+  secret_key: ""
+  
 postgres:
   enabled: true
   addr: "localhost:5432"
