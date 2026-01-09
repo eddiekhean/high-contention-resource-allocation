@@ -13,3 +13,13 @@ type Event struct {
 	Score     float64
 	Action    string // enqueue | allocated | wait | drop
 }
+type MazeMatchResponse struct {
+	Matched  bool     `json:"matched"`
+	Distance int      `json:"distance,omitempty"`
+	Maze     *MazeDTO `json:"maze,omitempty"`
+}
+
+type MazeDTO struct {
+	ID  int64  `json:"id"`
+	URL string `json:"url"`
+}

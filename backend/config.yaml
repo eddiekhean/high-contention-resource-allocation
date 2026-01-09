@@ -20,8 +20,11 @@ s3:
   enabled: false
   addr: "ap-southeast-2"
 postgres:
-  enabled: false
+  enabled: true
   addr: "localhost:5432"
   user: postgres
   password: postgres
   db: app
+image:
+  match_threshold: 5
+  prefix_range: 1

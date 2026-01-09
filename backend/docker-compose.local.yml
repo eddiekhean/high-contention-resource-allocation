@@ -21,3 +21,6 @@ services:
 volumes:
   pg-data:
   redis-data:
+image:
+  match_threshold: 5
+  prefix_range: 1

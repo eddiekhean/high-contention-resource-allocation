@@ -39,6 +39,11 @@ type Config struct {
 	RedisConfig RedisConfig    `yaml:"redis" json:"redis"`
 	S3          S3Config       `yaml:"s3" json:"s3"`
 	Postgres    PostgresConfig `yaml:"postgres" json:"postgres"`
+	ImageConfig ImageConfig    `yaml:"image" json:"image"`
+}
+type ImageConfig struct {
+	MatchThreshold int `yaml:"match_threshold" mapstructure:"match_threshold"`
+	PrefixRange    int `yaml:"prefix_range" mapstructure:"prefix_range"`
 }
 type RedisConfig struct {
 	Enabled  bool   `yaml:"enabled"`
@@ -174,6 +179,12 @@ func overrideFromEnv(cfg *Config) {
 	}
 	if dbName := os.Getenv("POSTGRES_DB"); dbName != "" {
 		cfg.Postgres.DB = dbName
+	}
+	if cfg.ImageConfig.MatchThreshold <= 0 {
+		panic("invalid match threshold")
+	}
+	if cfg.ImageConfig.PrefixRange < 0 {
+		panic("invalid prefix range")
 	}
 
 }

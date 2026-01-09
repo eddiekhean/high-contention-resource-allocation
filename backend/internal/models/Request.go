@@ -27,3 +27,6 @@ type ClientArrival struct {
 	Class     string `json:"class"`
 	FirstTick int    `json:"first_tick"`
 }
+type MatchMazeImageRequest struct {
+	DHash string `json:"dhash" binding:"required"`
+}
