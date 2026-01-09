@@ -16,3 +16,12 @@ log:
   level: info
   format: json
   output: stdout
+s3:
+  enabled: false
+  addr: "ap-southeast-2"
+postgres:
+  enabled: false
+  addr: "localhost:5432"
+  user: postgres
+  password: postgres
+  db: app

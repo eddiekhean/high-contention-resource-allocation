@@ -6,6 +6,7 @@ import (
 
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/client"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/config"
+	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/db"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/middleware"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/service"
@@ -43,7 +44,26 @@ func main() {
 	if rdb != nil {
 		logger.Info("redis connected")
 	}
-
+	// Connect S3
+	s3Client, err := client.NewS3Client(&cfg.S3)
+	if err != nil {
+		logger.Fatalf("s3 client initialization failed: %v", err)
+	}
+	if s3Client != nil {
+		logger.Info("s3 connected")
+	} else {
+		logger.Warn("s3 is disabled")
+	}
+	// Connect Postgres
+	pg, err := db.NewPostgres(&cfg.Postgres)
+	if err != nil {
+		logger.Fatalf("postgres client initialization failed: %v", err)
+	}
+	if pg != nil {
+		logger.Info("postgres connected")
+	} else {
+		logger.Warn("postgres is disabled")
+	}
 	r := gin.New()
 
 	r.Use(

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 
+	"github.com/go-playground/validator/v10"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
 
@@ -24,17 +25,33 @@ type RateLimit struct {
 	RPS     int  `yaml:"rps"`   // request / second
 	Burst   int  `yaml:"burst"` // cho phép vượt ngắn hạn
 }
+type S3Config struct {
+	Enabled   bool   `yaml:"enabled"`
+	AccessKey string `yaml:"access_key" validate:"required_if=Enabled true"`
+	SecretKey string `yaml:"secret_key" validate:"required_if=Enabled true"`
+	Bucket    string `yaml:"bucket" validate:"required_if=Enabled true"`
+	Addr      string `yaml:"addr" validate:"required_if=Enabled true"`
+}
 
 type Config struct {
-	Log         Log         `yaml:"log" json:"log"`
-	RateLimit   RateLimit   `yaml:"rate_limit" json:"rate_limit"`
-	RedisConfig RedisConfig `yaml:"redis" json:"redis"`
+	Log         Log            `yaml:"log" json:"log"`
+	RateLimit   RateLimit      `yaml:"rate_limit" json:"rate_limit"`
+	RedisConfig RedisConfig    `yaml:"redis" json:"redis"`
+	S3          S3Config       `yaml:"s3" json:"s3"`
+	Postgres    PostgresConfig `yaml:"postgres" json:"postgres"`
 }
 type RedisConfig struct {
 	Enabled  bool   `yaml:"enabled"`
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
+}
+type PostgresConfig struct {
+	Enabled  bool   `yaml:"enabled" json:"enabled"`
+	Addr     string `yaml:"addr" json:"addr" validate:"required_if=Enabled true"`
+	User     string `yaml:"user" json:"user" validate:"required_if=Enabled true"`
+	Password string `yaml:"password" json:"password" validate:"required_if=Enabled true"`
+	DB       string `yaml:"db" json:"db" validate:"required_if=Enabled true"`
 }
 
 // LoadFromFile loads configuration from a specific YAML file
@@ -66,17 +83,14 @@ func loadYAMLFile(config *Config, filename string) error {
 
 // validate checks if the configuration is valid
 func validate(config *Config) error {
-	// Enum validation - Log level
-	validLogLevels := []string{"debug", "info", "warn", "error", "fatal"}
-	validLogLevel := false
-	for _, level := range validLogLevels {
-		if config.Log.Level == level {
-			validLogLevel = true
-			break
+	v := validator.New()
+
+	// Register custom validation if needed, but required_if should work
+	if err := v.Struct(config); err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			logrus.Errorf("Validation error: Field '%s' failed on the '%s' tag", err.Field(), err.Tag())
 		}
-	}
-	if !validLogLevel {
-		return fmt.Errorf("invalid log.level: %s (valid values: %s)", config.Log.Level, strings.Join(validLogLevels, ", "))
+		return err
 	}
 
 	// Set default values for log configuration
@@ -85,39 +99,6 @@ func validate(config *Config) error {
 	}
 	if config.Log.Format == "" {
 		config.Log.Format = "json" // Default to json
-	}
-
-	// Enum validation - Log format
-	validLogFormats := []string{"json", "text"}
-	validLogFormat := false
-	for _, format := range validLogFormats {
-		if config.Log.Format == format {
-			validLogFormat = true
-			break
-		}
-	}
-	if !validLogFormat {
-		return fmt.Errorf("invalid log.format: %s (valid values: %s)", config.Log.Format, strings.Join(validLogFormats, ", "))
-	}
-
-	// Enum validation - Log output
-	validLogOutputs := []string{"stdout", "file", "both"}
-	validLogOutput := false
-	for _, output := range validLogOutputs {
-		if config.Log.Output == output {
-			validLogOutput = true
-			break
-		}
-	}
-	if !validLogOutput {
-		return fmt.Errorf("invalid log.output: %s (valid values: %s)", config.Log.Output, strings.Join(validLogOutputs, ", "))
-	}
-
-	// Validate file path when output includes file
-	if config.Log.Output == "file" || config.Log.Output == "both" {
-		if config.Log.FilePath == "" {
-			return fmt.Errorf("log.file_path is required when log.output is 'file' or 'both'")
-		}
 	}
 
 	// Set default values for log rotation if not specified
@@ -130,6 +111,16 @@ func validate(config *Config) error {
 	if config.Log.MaxAge <= 0 {
 		config.Log.MaxAge = 30 // Default 30 days
 	}
+
+	// Validate file path when output includes file
+	if config.Log.Output == "file" || config.Log.Output == "both" {
+		if config.Log.FilePath == "" {
+			err := fmt.Errorf("log.file_path is required when log.output is 'file' or 'both'")
+			logrus.Error(err)
+			return err
+		}
+	}
+
 	return nil
 }
 func overrideFromEnv(cfg *Config) {
@@ -150,4 +141,39 @@ func overrideFromEnv(cfg *Config) {
 	if level := os.Getenv("LOG_LEVEL"); level != "" {
 		cfg.Log.Level = level
 	}
+
+	// ===== S3 =====
+	if enabled := os.Getenv("S3_ENABLED"); enabled != "" {
+		cfg.S3.Enabled = enabled == "true"
+	}
+	if key := os.Getenv("S3_ACCESS_KEY"); key != "" {
+		cfg.S3.AccessKey = key
+	}
+	if secret := os.Getenv("S3_SECRET_KEY"); secret != "" {
+		cfg.S3.SecretKey = secret
+	}
+	if bucket := os.Getenv("S3_BUCKET"); bucket != "" {
+		cfg.S3.Bucket = bucket
+	}
+	if region := os.Getenv("AWS_REGION"); region != "" {
+		cfg.S3.Addr = region
+	}
+
+	// ===== Postgres =====
+	if enabled := os.Getenv("POSTGRES_ENABLED"); enabled != "" {
+		cfg.Postgres.Enabled = enabled == "true"
+	}
+	if addr := os.Getenv("POSTGRES_ADDR"); addr != "" {
+		cfg.Postgres.Addr = addr
+	}
+	if user := os.Getenv("POSTGRES_USER"); user != "" {
+		cfg.Postgres.User = user
+	}
+	if pwd := os.Getenv("POSTGRES_PASSWORD"); pwd != "" {
+		cfg.Postgres.Password = pwd
+	}
+	if dbName := os.Getenv("POSTGRES_DB"); dbName != "" {
+		cfg.Postgres.DB = dbName
+	}
+
 }
