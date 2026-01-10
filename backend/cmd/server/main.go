@@ -19,10 +19,16 @@ import (
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/storage"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		logrus.Warn("No .env file found or error loading it")
+	}
+
 	var (
 		configFile = flag.String("config", "config.yaml", "Path to YAML configuration file")
 	)

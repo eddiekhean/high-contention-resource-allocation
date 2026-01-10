@@ -154,15 +154,24 @@ func overrideFromEnv(cfg *Config) {
 	}
 	if key := os.Getenv("S3_ACCESS_KEY"); key != "" {
 		cfg.S3.AccessKey = key
+	} else if key := os.Getenv("AWS_ACCESS_KEY_ID"); key != "" {
+		cfg.S3.AccessKey = key
 	}
+
 	if secret := os.Getenv("S3_SECRET_KEY"); secret != "" {
 		cfg.S3.SecretKey = secret
+	} else if secret := os.Getenv("AWS_SECRET_ACCESS_KEY"); secret != "" {
+		cfg.S3.SecretKey = secret
 	}
+
 	if region := os.Getenv("AWS_REGION"); region != "" {
 		cfg.S3.Addr = region
 	}
 	if endpoint := os.Getenv("S3_ENDPOINT"); endpoint != "" {
 		cfg.S3.Endpoint = endpoint
+	}
+	if bucket := os.Getenv("S3_BUCKET"); bucket != "" {
+		cfg.S3.Bucket = bucket
 	}
 
 	// ===== Postgres =====

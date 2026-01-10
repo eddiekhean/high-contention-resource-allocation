@@ -21,7 +21,8 @@ s3:
   addr: "ap-southeast-2"
   access_key: ""
   secret_key: ""
-  
+  bucket: ""
+
 postgres:
   enabled: true
   addr: "localhost:5432"
