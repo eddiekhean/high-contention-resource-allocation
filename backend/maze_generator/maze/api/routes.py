@@ -4,6 +4,10 @@ from ..core.generator import MazeGenerator
 
 router = APIRouter()
 
+@router.get("/health")
+def health():
+    return {"status": "ok"}
+
 @router.post("/generate", response_model=MazeResponse)
 async def generate_maze(request: MazeGenerationRequest):
     """
