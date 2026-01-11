@@ -12,10 +12,17 @@ type MazePoint struct {
 	Y int `json:"y"`
 }
 
+type Walls struct {
+	Top    bool `json:"top"`
+	Right  bool `json:"right"`
+	Bottom bool `json:"bottom"`
+	Left   bool `json:"left"`
+}
+
 type MazeCell struct {
-	X     int     `json:"x"`
-	Y     int     `json:"y"`
-	Walls [4]bool `json:"walls"` // [top, right, bottom, left]
+	X     int   `json:"x"`
+	Y     int   `json:"y"`
+	Walls Walls `json:"walls"`
 }
 
 type MazeResponse struct {

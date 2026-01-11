@@ -1,12 +1,14 @@
 APP_NAME=app
 COMPOSE_LOCAL=docker-compose.local.yml
+GO_MAIN=cmd/server/main.go
 
-# ===== Go local =====
+# ===== Go =====
 run:
-	go run main.go
+	docker compose -f $(COMPOSE_LOCAL) up -d maze-service redis
+	go run $(GO_MAIN)
 
 build:
-	go build -o bin/$(APP_NAME) .
+	go build -o bin/$(APP_NAME) $(GO_MAIN)
 
 tidy:
 	go mod tidy
@@ -20,18 +22,15 @@ test:
 clean:
 	rm -rf bin
 
-# ===== Docker Compose (Local Dev) =====
-up:
+# ===== Docker helpers =====
+compose-up:
 	docker compose -f $(COMPOSE_LOCAL) up --build
 
-down:
+compose-down:
 	docker compose -f $(COMPOSE_LOCAL) down
 
-restart:
-	docker compose -f $(COMPOSE_LOCAL) down && docker compose -f $(COMPOSE_LOCAL) up --build
-
-logs:
+compose-logs:
 	docker compose -f $(COMPOSE_LOCAL) logs -f
 
-ps:
+compose-ps:
 	docker compose -f $(COMPOSE_LOCAL) ps

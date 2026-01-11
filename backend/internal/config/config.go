@@ -36,11 +36,16 @@ type MazeServiceConfig struct {
 	URL string `yaml:"url" json:"url"`
 }
 
+type CorsConfig struct {
+	AllowedOrigins []string `yaml:"allowed_origins" json:"allowed_origins"`
+}
+
 type Config struct {
 	Log         Log               `yaml:"log" json:"log"`
 	RateLimit   RateLimit         `yaml:"rate_limit" json:"rate_limit"`
 	RedisConfig RedisConfig       `yaml:"redis" json:"redis"`
 	MazeService MazeServiceConfig `yaml:"maze_service" json:"maze_service"`
+	Cors        CorsConfig        `yaml:"cors" json:"cors"`
 }
 
 // LoadFromFile loads configuration from a specific YAML file
@@ -162,4 +167,8 @@ func overrideFromEnv(cfg *Config) {
 		cfg.MazeService.URL = mazeURL
 	}
 
+	// CORS
+	if allowedOrigins := os.Getenv("ALLOWED_ORIGINS"); allowedOrigins != "" {
+		cfg.Cors.AllowedOrigins = strings.Split(allowedOrigins, ",")
+	}
 }

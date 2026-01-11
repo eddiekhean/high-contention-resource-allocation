@@ -57,7 +57,7 @@ func main() {
 		gin.Logger(),
 		gin.Recovery(),
 		middleware.RateLimitMiddleware(&cfg.RateLimit),
-		middleware.CORSMiddleware(),
+		middleware.CORSMiddleware(cfg.Cors.AllowedOrigins),
 	)
 	r.GET("/health", handler.HealthCheck)
 
