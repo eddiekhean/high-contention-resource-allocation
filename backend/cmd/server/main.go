@@ -61,14 +61,16 @@ func main() {
 	)
 	r.GET("/health", handler.HealthCheck)
 
-	public := r.Group("/v1/api/public")
+	public := r.Group("/api/v1/public")
 	{
 		public.POST("/simulate", simulateHandler.Simulate)
 		leetcode := public.Group("/leetcode")
 		{
-			leetcode.POST("/generate", mazeHandler.Generate)
+			maze := leetcode.Group("/maze")
+			{
+				maze.POST("/generate", mazeHandler.Generate)
+			}
 		}
-
 	}
 
 	r.Run(":8080")

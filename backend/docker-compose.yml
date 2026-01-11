@@ -18,6 +18,7 @@ services:
       - redis-data:/data
     command: [ "redis-server", "--appendonly", "yes" ]
   maze-service:
+    image: dikhean/maze-generator:latest
     build:
       context: ./maze_generator
     ports:

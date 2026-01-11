@@ -20,3 +20,11 @@ log:
   level: info
   format: json
   output: stdout
+
+cors:
+  allowed_origins:
+    - "http://localhost:5173"
+    - "https://high-contention-resource-allocation.vercel.app"
+    - "https://www.eddiekhean.site"
+    - "https://eddiekhean.site"
+    - "https://www.eddiekhean.site/"

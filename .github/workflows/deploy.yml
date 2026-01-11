@@ -29,6 +29,14 @@ jobs:
           push: true
           tags: dikhean/simulate-api:latest
 
+      - name: Build & Push Maze Generator (multi-arch)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend/maze_generator
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: dikhean/maze-generator:latest
+
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -38,5 +46,6 @@ jobs:
           script: |
             cd ~/app/high-contention-resource-allocation/backend
             docker pull dikhean/simulate-api:latest
+            docker pull dikhean/maze-generator:latest
             docker compose down
             docker compose up -d
