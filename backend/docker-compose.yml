@@ -5,13 +5,15 @@ services:
     image: dikhean/simulate-api:latest
     ports:
       - "8080:8080"
-    depends_on:
-      - redis
-      - maze-service
     environment:
       REDIS_ADDR: redis:6379
       MAZE_SERVICE_URL: http://maze-service:8000
       GIN_MODE: release
+    depends_on:
+      redis:
+        condition: service_started
+      maze-service:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 30s
@@ -23,6 +25,11 @@ services:
     image: dikhean/maze-generator:latest
     ports:
       - "8000:8000"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: always
 
   redis:
