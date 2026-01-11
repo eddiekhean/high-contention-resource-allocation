@@ -166,7 +166,6 @@ func overrideFromEnv(cfg *Config) {
 	if mazeURL := os.Getenv("MAZE_SERVICE_URL"); mazeURL != "" {
 		cfg.MazeService.URL = mazeURL
 	}
-
 	// CORS
 	if allowedOrigins := os.Getenv("ALLOWED_ORIGINS"); allowedOrigins != "" {
 		cfg.Cors.AllowedOrigins = strings.Split(allowedOrigins, ",")

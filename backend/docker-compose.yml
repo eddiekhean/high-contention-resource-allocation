@@ -7,35 +7,30 @@ services:
       - "8080:8080"
     depends_on:
       - redis
+      - maze-service
     environment:
       REDIS_ADDR: redis:6379
+      MAZE_SERVICE_URL: http://maze-service:8000
+      GIN_MODE: release
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: always
+
+  maze-service:
+    image: dikhean/maze-generator:latest
+    ports:
+      - "8000:8000"
     restart: always
 
   redis:
     image: redis:7
-    restart: always
     volumes:
       - redis-data:/data
     command: [ "redis-server", "--appendonly", "yes" ]
-  maze-service:
-    image: dikhean/maze-generator:latest
-    build:
-      context: ./maze_generator
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./maze_generator:/app
-    command: uvicorn maze.main:app --host 0.0.0.0 --port 8000 --reload
-
-healthcheck:
-  test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-  interval: 30s
-  timeout: 5s
-  retries: 3
-environment:
-  - GIN_MODE=release
+    restart: always
 
 volumes:
   redis-data:
-
-
