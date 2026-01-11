@@ -16,6 +16,12 @@ log:
   level: info
   format: json
   output: stdout
+auth:
+  signing_method: "RS256"
+  access_expiration_seconds: 3600
+  refresh_expiration_seconds: 604800
+  private_key_path: "certs/id_rsa"
+  public_key_path: "certs/id_rsa.pub"
 s3:
   enabled: true
   addr: "ap-southeast-2"

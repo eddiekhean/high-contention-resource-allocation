@@ -8,6 +8,3 @@ CREATE TABLE IF NOT EXISTS images (
 
 CREATE INDEX IF NOT EXISTS idx_images_dhash_prefix
 ON images (dhash_prefix);
-
-CREATE INDEX IF NOT EXISTS idx_images_dhash
-ON images (dhash);

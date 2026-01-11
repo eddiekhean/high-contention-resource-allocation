@@ -25,6 +25,14 @@ type RateLimit struct {
 	RPS     int  `yaml:"rps"`   // request / second
 	Burst   int  `yaml:"burst"` // cho phép vượt ngắn hạn
 }
+type AuthConfig struct {
+	SigningMethod            string `yaml:"signing_method" validate:"required"`
+	AccessExpirationSeconds  int    `yaml:"access_expiration_seconds" validate:"required"`
+	RefreshExpirationSeconds int    `yaml:"refresh_expiration_seconds" validate:"required"`
+	PrivateKeyPath           string `yaml:"private_key_path"`
+	PublicKeyPath            string `yaml:"public_key_path"`
+}
+
 type S3Config struct {
 	Enabled   bool   `yaml:"enabled"`
 	AccessKey string `yaml:"access_key" validate:"required_if=Enabled true"`
@@ -38,6 +46,7 @@ type Config struct {
 	Log         Log            `yaml:"log" json:"log"`
 	RateLimit   RateLimit      `yaml:"rate_limit" json:"rate_limit"`
 	RedisConfig RedisConfig    `yaml:"redis" json:"redis"`
+	Auth        AuthConfig     `yaml:"auth" json:"auth"`
 	S3          S3Config       `yaml:"s3" json:"s3"`
 	Postgres    PostgresConfig `yaml:"postgres" json:"postgres"`
 	ImageConfig ImageConfig    `yaml:"image" json:"image"`
@@ -190,6 +199,28 @@ func overrideFromEnv(cfg *Config) {
 	if dbName := os.Getenv("POSTGRES_DB"); dbName != "" {
 		cfg.Postgres.DB = dbName
 	}
+
+	// ===== Auth =====
+	if method := os.Getenv("AUTH_SIGNING_METHOD"); method != "" {
+		cfg.Auth.SigningMethod = method
+	}
+	if prk := os.Getenv("AUTH_PRIVATE_KEY_PATH"); prk != "" {
+		cfg.Auth.PrivateKeyPath = prk
+	}
+	if puk := os.Getenv("AUTH_PUBLIC_KEY_PATH"); puk != "" {
+		cfg.Auth.PublicKeyPath = puk
+	}
+	if accT := os.Getenv("AUTH_ACCESS_EXPIRATION"); accT != "" {
+		if v, err := strconv.Atoi(accT); err == nil {
+			cfg.Auth.AccessExpirationSeconds = v
+		}
+	}
+	if refT := os.Getenv("AUTH_REFRESH_EXPIRATION"); refT != "" {
+		if v, err := strconv.Atoi(refT); err == nil {
+			cfg.Auth.RefreshExpirationSeconds = v
+		}
+	}
+
 	if cfg.ImageConfig.MatchThreshold <= 0 {
 		panic("invalid match threshold")
 	}
