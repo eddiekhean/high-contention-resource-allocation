@@ -12,6 +12,10 @@ redis:
   password: ""
   db: 0
 
+maze_service:
+  url: "http://maze-service:8000"
+
+
 log:
   level: info
   format: json

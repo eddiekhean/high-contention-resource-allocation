@@ -25,16 +25,22 @@ type RateLimit struct {
 	Burst   int  `yaml:"burst"` // cho phép vượt ngắn hạn
 }
 
-type Config struct {
-	Log         Log         `yaml:"log" json:"log"`
-	RateLimit   RateLimit   `yaml:"rate_limit" json:"rate_limit"`
-	RedisConfig RedisConfig `yaml:"redis" json:"redis"`
-}
 type RedisConfig struct {
 	Enabled  bool   `yaml:"enabled"`
 	Addr     string `yaml:"addr"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
+}
+
+type MazeServiceConfig struct {
+	URL string `yaml:"url" json:"url"`
+}
+
+type Config struct {
+	Log         Log               `yaml:"log" json:"log"`
+	RateLimit   RateLimit         `yaml:"rate_limit" json:"rate_limit"`
+	RedisConfig RedisConfig       `yaml:"redis" json:"redis"`
+	MazeService MazeServiceConfig `yaml:"maze_service" json:"maze_service"`
 }
 
 // LoadFromFile loads configuration from a specific YAML file
@@ -150,4 +156,10 @@ func overrideFromEnv(cfg *Config) {
 	if level := os.Getenv("LOG_LEVEL"); level != "" {
 		cfg.Log.Level = level
 	}
+
+	// Maze Service
+	if mazeURL := os.Getenv("MAZE_SERVICE_URL"); mazeURL != "" {
+		cfg.MazeService.URL = mazeURL
+	}
+
 }

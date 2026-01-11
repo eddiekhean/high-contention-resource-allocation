@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  api:
+    image: dikhean/simulate-api:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      REDIS_ADDR: redis:6379
+      GIN_MODE: debug
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  maze-service:
+    build:
+      context: ./maze_generator
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./maze_generator:/app
+    command: uvicorn maze.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      PYTHONUNBUFFERED: "1"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    restart: unless-stopped
+
+volumes:
+  redis-data:

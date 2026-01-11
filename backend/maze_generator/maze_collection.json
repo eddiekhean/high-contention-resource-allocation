@@ -1,0 +1,72 @@
+{
+    "info": {
+        "_postman_id": "maze-generator-service",
+        "name": "Maze Generator Service",
+        "description": "API for generating mazes using the Maze Generator Service.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Generate Maze (Perfect)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"rows\": 10,\n    \"cols\": 10,\n    \"loop_ratio\": 0.0,\n    \"seed\": 42\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/maze/generate",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "maze",
+                        "generate"
+                    ]
+                },
+                "description": "Generates a perfect maze (no loops) with 10x10 dimensions."
+            },
+            "response": []
+        },
+        {
+            "name": "Generate Maze (Braided)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"rows\": 15,\n    \"cols\": 15,\n    \"loop_ratio\": 0.2,\n    \"seed\": 123\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8000/maze/generate",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "maze",
+                        "generate"
+                    ]
+                },
+                "description": "Generates a braided maze (with loops) using a loop ratio of 0.2."
+            },
+            "response": []
+        }
+    ]
+}

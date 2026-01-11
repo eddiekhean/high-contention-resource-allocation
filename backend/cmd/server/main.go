@@ -34,8 +34,15 @@ func main() {
 	//ConnectRedis
 	rdb, err := client.NewRedisClient(&cfg.RedisConfig)
 	store := storage.NewSlotStore(rdb)
+
+	// Services
 	simulateService := service.NewSimulateService(logger, store)
+	mazeService := service.NewMazeService(cfg, logger)
+
+	// Handlers
 	simulateHandler := handler.NewSimulateHandler(simulateService, logger)
+	mazeHandler := handler.NewMazeHandler(mazeService, logger)
+
 	if err != nil {
 		logger.Fatalf("redis connect failed: %v", err)
 	}
@@ -53,6 +60,17 @@ func main() {
 		middleware.CORSMiddleware(),
 	)
 	r.GET("/health", handler.HealthCheck)
-	r.POST("/simulate", simulateHandler.Simulate)
+
+	public := r.Group("/v1/api/public")
+	{
+		public.POST("/simulate", simulateHandler.Simulate)
+		leetcode := public.Group("/leetcode")
+		{
+			leetcode.POST("/generate", mazeHandler.Generate)
+		}
+
+	}
+
 	r.Run(":8080")
+
 }
