@@ -1,0 +1,178 @@
+{
+    "info": {
+        "_postman_id": "all-endpoints-collection",
+        "name": "High Contention Resource Allocation API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "System",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/health",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "health"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Public",
+            "item": [
+                {
+                    "name": "Get Random Images",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/public/images",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "public",
+                                "images"
+                            ]
+                        },
+                        "description": "Returns 4 random images with presigned GET URLs."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Run Simulation",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"total_clients\": 10,\n    \"total_vouchers\": 5,\n    \"seed\": 42,\n    \"policy\": \"fifo\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/public/simulate",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "public",
+                                "simulate"
+                            ]
+                        },
+                        "description": "Runs a resource allocation simulation."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Leetcode Maze",
+                    "item": [
+                        {
+                            "name": "Match Image",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"dhash\": \"ac84d4dc46c6c438\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/public/leetcode/maze/images/match",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "leetcode",
+                                        "maze",
+                                        "images",
+                                        "match"
+                                    ]
+                                },
+                                "description": "Matches an image by its perceptual hash (dhash)."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Upload URL",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/public/leetcode/maze/images/upload-url",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "leetcode",
+                                        "maze",
+                                        "images",
+                                        "upload-url"
+                                    ]
+                                },
+                                "description": "Generates a presigned S3 PUT URL for uploading a new image."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Commit Image",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"dhash\": \"ac84d4dc46c6c438\",\n    \"s3Key\": \"images/sample-uuid.jpg\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/public/leetcode/maze/images",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "leetcode",
+                                        "maze",
+                                        "images"
+                                    ]
+                                },
+                                "description": "Commits a newly uploaded image to the database."
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080/api/v1",
+            "type": "string"
+        }
+    ]
+}

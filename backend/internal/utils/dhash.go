@@ -1,14 +1,27 @@
 package utils
 
-func ParseDHash(binary string) (uint64, error) {
-	var hash uint64
-	for _, c := range binary {
-		hash <<= 1
-		if c == '1' {
-			hash |= 1
+import (
+	"strconv"
+	"strings"
+)
+
+func ParseDHash(s string) (uint64, error) {
+	s = strings.TrimSpace(s)
+	// Try hex first if it's 16 chars or starts with 0x
+	if len(s) == 16 || strings.HasPrefix(s, "0x") {
+		cleanHex := strings.TrimPrefix(s, "0x")
+		if len(cleanHex) == 16 {
+			return strconv.ParseUint(cleanHex, 16, 64)
 		}
 	}
-	return hash, nil
+
+	// Try binary if it's 64 chars
+	if len(s) == 64 {
+		return strconv.ParseUint(s, 2, 64)
+	}
+
+	// Fallback: try as decimal number
+	return strconv.ParseUint(s, 10, 64)
 }
 
 func HammingDistance(a, b uint64) int {

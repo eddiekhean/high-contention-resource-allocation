@@ -17,6 +17,15 @@ services:
     command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
       - redis-data:/data
+  maze-vision:
+    build: ./maze-vision
+    ports:
+      - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
 
 volumes:
   pg-data:

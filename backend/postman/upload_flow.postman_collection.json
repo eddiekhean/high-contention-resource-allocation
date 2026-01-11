@@ -1,0 +1,112 @@
+{
+    "info": {
+        "_postman_id": "image-upload-flow",
+        "name": "Image Upload Flow",
+        "description": "Sequence of requests to simulate the frontend image upload process: Get URL -> Upload to S3 -> Commit.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Step 1: Request Upload URL",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "pm.collectionVariables.set(\"uploadURL\", jsonData.uploadURL);",
+                            "pm.collectionVariables.set(\"s3Key\", jsonData.s3Key);",
+                            "console.log(\"Saved uploadURL and s3Key to collection variables\");"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/public/leetcode/maze/images/upload-url",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "public",
+                        "leetcode",
+                        "maze",
+                        "images",
+                        "upload-url"
+                    ]
+                },
+                "description": "Backend returns a presigned S3 PUT URL and the final S3 key."
+            },
+            "response": []
+        },
+        {
+            "name": "Step 2: Upload Binary to S3",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "file",
+                    "file": {
+                        "src": ""
+                    }
+                },
+                "url": {
+                    "raw": "{{uploadURL}}",
+                    "host": [
+                        "{{uploadURL}}"
+                    ]
+                },
+                "description": "Direct PUT to S3 using the presigned URL. Note: In Postman, you need to manually select a file in the Body -> binary tab."
+            },
+            "response": []
+        },
+        {
+            "name": "Step 3: Commit Image to Database",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"dhash\": \"ac84d4dc46c6c438\",\n    \"s3Key\": \"{{s3Key}}\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/public/leetcode/maze/images",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "public",
+                        "leetcode",
+                        "maze",
+                        "images"
+                    ]
+                },
+                "description": "Inform the backend that the upload is complete and provide the perceptual hash."
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "uploadURL",
+            "value": ""
+        },
+        {
+            "key": "s3Key",
+            "value": ""
+        }
+    ]
+}

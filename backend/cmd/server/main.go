@@ -52,6 +52,11 @@ func main() {
 	simulateService := service.NewSimulateService(logger, store)
 	simulateHandler := handler.NewSimulateHandler(simulateService, logger)
 
+	// Auth
+
+	if err != nil {
+		logger.Fatalf("failed to initialize JWT manager: %v", err)
+	}
 	if rdb != nil {
 		logger.Info("redis connected")
 	}
@@ -82,7 +87,7 @@ func main() {
 	}
 	// Repository
 	imageRepository := repository.NewPgImageRepository(pg)
-	imageService := service.NewImageService(imageRepository, &cfg.ImageConfig, s3Client)
+	imageService := service.NewImageService(imageRepository, &cfg.ImageConfig, s3Client, logger)
 	mazeHandler := handler.NewMazeHandler(imageService, logger)
 
 	// Gin
@@ -90,28 +95,36 @@ func main() {
 	r.Use(
 		gin.Logger(),
 		gin.Recovery(),
-		middleware.RateLimitMiddleware(&cfg.RateLimit),
-		middleware.CORSMiddleware(),
+		middleware.CORSMiddleware(cfg.CORS.AllowedOrigins),
 	)
 
-	// system
-	r.GET("/health", handler.HealthCheck)
-
-	// simulate (generic playground)
-	r.POST("/simulate", simulateHandler.Simulate)
-
-	// Images
-
-	// ===== LEETCODE PAGE =====
-	leetcode := r.Group("/leetcode")
+	// Public v1 routes
+	v1 := r.Group("/api/v1")
 	{
-		maze := leetcode.Group("/maze")
+		// system
+		v1.GET("/health", handler.HealthCheck)
+
+		// Public routes
+		public := v1.Group("/public")
+		public.Use(middleware.RateLimitMiddleware(&cfg.RateLimit))
 		{
-			images := maze.Group("/images")
+			public.GET("/images", mazeHandler.GetPublicImages)
+			// simulate (generic playground)
+
+			public.POST("/simulate", simulateHandler.Simulate)
+
+			// ===== LEETCODE PAGE =====
+			leetcode := public.Group("/leetcode")
 			{
-				images.POST("/match", mazeHandler.MatchImage)
-				images.POST("/upload-url", mazeHandler.GetUploadURL)
-				images.POST("", mazeHandler.CommitImage)
+				maze := leetcode.Group("/maze")
+				{
+					images := maze.Group("/images")
+					{
+						images.POST("/match", mazeHandler.MatchImage)
+						images.POST("/upload-url", mazeHandler.GetUploadURL)
+						images.POST("", mazeHandler.CommitImage)
+					}
+				}
 			}
 		}
 	}

@@ -9,7 +9,7 @@ import (
 type ImageRepository interface {
 	Create(ctx context.Context, img *domain.Image) error
 	FindByID(ctx context.Context, id int64) (*domain.Image, error)
-	FindByDHash(ctx context.Context, hash uint64) (*domain.Image, error)
+	FindByDHash(ctx context.Context, hash string) (*domain.Image, error)
 	GetAll(ctx context.Context) ([]*domain.Image, error)
 
 	// image similarity prefix-based (keeping for compatibility or optimization)
@@ -18,4 +18,5 @@ type ImageRepository interface {
 		prefix uint16,
 		rangeSize int,
 	) ([]*domain.Image, error)
+	GetRandom(ctx context.Context, limit int) ([]*domain.Image, error)
 }

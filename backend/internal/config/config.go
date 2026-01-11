@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
@@ -24,6 +25,9 @@ type RateLimit struct {
 	Enabled bool `yaml:"enabled"`
 	RPS     int  `yaml:"rps"`   // request / second
 	Burst   int  `yaml:"burst"` // cho phép vượt ngắn hạn
+}
+type CORSConfig struct {
+	AllowedOrigins []string `yaml:"allowed_origins" json:"allowed_origins"`
 }
 type AuthConfig struct {
 	SigningMethod            string `yaml:"signing_method" validate:"required"`
@@ -50,6 +54,7 @@ type Config struct {
 	S3          S3Config       `yaml:"s3" json:"s3"`
 	Postgres    PostgresConfig `yaml:"postgres" json:"postgres"`
 	ImageConfig ImageConfig    `yaml:"image" json:"image"`
+	CORS        CORSConfig     `yaml:"cors" json:"cors"`
 }
 type ImageConfig struct {
 	MatchThreshold int `yaml:"match_threshold" mapstructure:"match_threshold"`
@@ -218,6 +223,14 @@ func overrideFromEnv(cfg *Config) {
 	if refT := os.Getenv("AUTH_REFRESH_EXPIRATION"); refT != "" {
 		if v, err := strconv.Atoi(refT); err == nil {
 			cfg.Auth.RefreshExpirationSeconds = v
+		}
+	}
+
+	// ===== CORS =====
+	if origins := os.Getenv("CORS_ALLOWED_ORIGINS"); origins != "" {
+		cfg.CORS.AllowedOrigins = strings.Split(origins, ",")
+		for i := range cfg.CORS.AllowedOrigins {
+			cfg.CORS.AllowedOrigins[i] = strings.TrimSpace(cfg.CORS.AllowedOrigins[i])
 		}
 	}
 

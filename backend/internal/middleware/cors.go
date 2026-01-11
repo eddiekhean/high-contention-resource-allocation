@@ -2,18 +2,16 @@ package middleware
 
 import "github.com/gin-gonic/gin"
 
-func CORSMiddleware() gin.HandlerFunc {
-	allowedOrigins := map[string]bool{
-		"http://localhost:5173":                                  true,
-		"https://high-contention-resource-allocation.vercel.app": true,
-		"https://www.eddiekhean.site":                            true,
-		"https://eddiekhean.site":                                true, // ❗ bỏ dấu /
+func CORSMiddleware(allowedOrigins []string) gin.HandlerFunc {
+	allowedMap := make(map[string]bool)
+	for _, origin := range allowedOrigins {
+		allowedMap[origin] = true
 	}
 
 	return func(c *gin.Context) {
 		origin := c.GetHeader("Origin")
 
-		if allowedOrigins[origin] {
+		if allowedMap[origin] {
 			c.Header("Access-Control-Allow-Origin", origin)
 			c.Header("Access-Control-Allow-Credentials", "true")
 		}

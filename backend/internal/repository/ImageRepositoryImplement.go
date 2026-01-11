@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/db"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/domain"
+	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/utils"
 )
 
 type PgImageRepository struct {
@@ -18,11 +20,16 @@ func (r *PgImageRepository) Create(
 	ctx context.Context,
 	img *domain.Image,
 ) error {
-	err := r.db.QueryRow(ctx, `
-		INSERT INTO images (url, dhash)
-		VALUES ($1, $2)
+	dhashNum, err := utils.ParseDHash(img.DHash)
+	if err != nil {
+		return fmt.Errorf("invalid dhash format: %w", err)
+	}
+	prefix := fmt.Sprintf("%d", dhashNum>>48)
+	err = r.db.QueryRow(ctx, `
+		INSERT INTO images (s3_key, dhash, dhash_prefix)
+		VALUES ($1, $2, $3)
 		RETURNING id, created_at
-	`, img.URL, img.DHash).Scan(&img.ID, &img.CreatedAt)
+	`, img.S3Key, img.DHash, prefix).Scan(&img.ID, &img.CreatedAt)
 
 	return err
 }
@@ -33,23 +40,23 @@ func (r *PgImageRepository) FindByID(
 ) (*domain.Image, error) {
 	var img domain.Image
 	err := r.db.QueryRow(ctx, `
-		SELECT id, url, dhash, created_at
+		SELECT id, s3_key, dhash, created_at
 		FROM images
 		WHERE id = $1
-	`, id).Scan(&img.ID, &img.URL, &img.DHash, &img.CreatedAt)
+	`, id).Scan(&img.ID, &img.S3Key, &img.DHash, &img.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
 	return &img, nil
 }
 
-func (r *PgImageRepository) FindByDHash(ctx context.Context, hash uint64) (*domain.Image, error) {
+func (r *PgImageRepository) FindByDHash(ctx context.Context, hash string) (*domain.Image, error) {
 	var img domain.Image
 	err := r.db.QueryRow(ctx, `
-		SELECT id, url, dhash, created_at
+		SELECT id, s3_key, dhash, created_at
 		FROM images
 		WHERE dhash = $1
-	`, hash).Scan(&img.ID, &img.URL, &img.DHash, &img.CreatedAt)
+	`, hash).Scan(&img.ID, &img.S3Key, &img.DHash, &img.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +65,7 @@ func (r *PgImageRepository) FindByDHash(ctx context.Context, hash uint64) (*doma
 
 func (r *PgImageRepository) GetAll(ctx context.Context) ([]*domain.Image, error) {
 	rows, err := r.db.Query(ctx, `
-		SELECT id, url, dhash, created_at
+		SELECT id, s3_key, dhash, created_at
 		FROM images
 	`)
 	if err != nil {
@@ -69,7 +76,7 @@ func (r *PgImageRepository) GetAll(ctx context.Context) ([]*domain.Image, error)
 	var images []*domain.Image
 	for rows.Next() {
 		var img domain.Image
-		if err := rows.Scan(&img.ID, &img.URL, &img.DHash, &img.CreatedAt); err != nil {
+		if err := rows.Scan(&img.ID, &img.S3Key, &img.DHash, &img.CreatedAt); err != nil {
 			return nil, err
 		}
 		images = append(images, &img)
@@ -90,9 +97,9 @@ func (r *PgImageRepository) FindByPrefix(
 	high := int(prefix) + rangeSize
 
 	rows, err := r.db.Query(ctx, `
-		SELECT id, url, dhash
+		SELECT id, s3_key, dhash
 		FROM images
-		WHERE dhash_prefix BETWEEN $1 AND $2
+		WHERE dhash_prefix::int BETWEEN $1 AND $2
 	`, low, high)
 	if err != nil {
 		return nil, err
@@ -102,7 +109,7 @@ func (r *PgImageRepository) FindByPrefix(
 	var images []*domain.Image
 	for rows.Next() {
 		var img domain.Image
-		if err := rows.Scan(&img.ID, &img.URL, &img.DHash); err != nil {
+		if err := rows.Scan(&img.ID, &img.S3Key, &img.DHash); err != nil {
 			return nil, err
 		}
 		images = append(images, &img)
@@ -111,5 +118,28 @@ func (r *PgImageRepository) FindByPrefix(
 		return nil, err
 	}
 
+	return images, nil
+}
+
+func (r *PgImageRepository) GetRandom(ctx context.Context, limit int) ([]*domain.Image, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT id, s3_key, dhash, created_at
+		FROM images
+		ORDER BY RANDOM()
+		LIMIT $1
+	`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var images []*domain.Image
+	for rows.Next() {
+		var img domain.Image
+		if err := rows.Scan(&img.ID, &img.S3Key, &img.DHash, &img.CreatedAt); err != nil {
+			return nil, err
+		}
+		images = append(images, &img)
+	}
 	return images, nil
 }

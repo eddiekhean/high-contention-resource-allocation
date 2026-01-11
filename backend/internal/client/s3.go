@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	cfg "github.com/eddiekhean/high-contention-resource-allocation-backend/internal/config"
 )
 
@@ -79,27 +78,6 @@ func (s *S3Client) GetPresignedPutURL(ctx context.Context, key string, expiratio
 		return "", err
 	}
 	return req.URL, nil
-}
-
-// Exists kiểm tra file có tồn tại trên S3 không
-func (s *S3Client) Exists(ctx context.Context, key string) (bool, error) {
-	_, err := s.Client.HeadObject(ctx, &s3.HeadObjectInput{
-		Bucket: aws.String(s.Bucket),
-		Key:    aws.String(key),
-	})
-	if err != nil {
-		var nsk *types.NoSuchKey
-		if errors.As(err, &nsk) {
-			return false, nil
-		}
-		// Some S3 implementations might return NotFound for HeadObject
-		var nf *types.NotFound
-		if errors.As(err, &nf) {
-			return false, nil
-		}
-		return false, err
-	}
-	return true, nil
 }
 
 // Delete xóa file trên S3

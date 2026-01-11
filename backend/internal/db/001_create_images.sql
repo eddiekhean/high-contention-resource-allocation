@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS images (
     id BIGSERIAL PRIMARY KEY,
-    url TEXT NOT NULL,
-    dhash BIGINT NOT NULL,
-    dhash_prefix SMALLINT NOT NULL,
+    s3_key TEXT NOT NULL UNIQUE,
+    dhash TEXT NOT NULL,
+    dhash_prefix TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT now()
 );
 

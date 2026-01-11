@@ -13,7 +13,7 @@ redis:
   db: 0
 
 log:
-  level: info
+  level: debug
   format: json
   output: stdout
 auth:
@@ -38,3 +38,10 @@ postgres:
 image:
   match_threshold: 5
   prefix_range: 1
+cors:
+  allowed_origins:
+    - "http://localhost:5173"
+    - "http://localhost:5174"
+    - "https://high-contention-resource-allocation.vercel.app"
+    - "https://www.eddiekhean.site"
+    - "https://eddiekhean.site"

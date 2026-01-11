@@ -1,13 +1,13 @@
 package models
 
 type MatchImageRequest struct {
-	DHash uint64 `json:"dhash" binding:"required"`
+	DHash string `json:"dhash" binding:"required"`
 }
 
 type ImageDTO struct {
 	ID    int64  `json:"id"`
 	URL   string `json:"url"`
-	DHash uint64 `json:"dhash"`
+	DHash string `json:"dhash"`
 }
 
 type MatchImageResponse struct {
@@ -21,6 +21,10 @@ type UploadURLResponse struct {
 }
 
 type CommitImageRequest struct {
-	DHash uint64 `json:"dhash" binding:"required"`
+	DHash string `json:"dhash" binding:"required"`
 	S3Key string `json:"s3Key" binding:"required"`
+}
+
+type PublicImagesResponse struct {
+	Images []*ImageDTO `json:"images"`
 }

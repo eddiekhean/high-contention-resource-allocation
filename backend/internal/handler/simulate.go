@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/apperr"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/models"
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/service"
 	"github.com/gin-gonic/gin"
@@ -29,15 +30,13 @@ func (h *SimulateHandler) Simulate(c *gin.Context) {
 	var input models.SimulationRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON không hợp lệ"})
+		c.JSON(apperr.ToResponse(apperr.ErrInvalidRequest))
 		return
 	}
 
 	events, err := h.service.RunSimulation(input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(apperr.ToResponse(err))
 		return
 	}
 
