@@ -6,18 +6,21 @@ import (
 	"github.com/eddiekhean/high-contention-resource-allocation-backend/internal/models"
 )
 
-type Decision struct {
-	Tick    int
-	Request models.Request
-	Score   float64
+type HybridStrategy struct {
+	cfg HybridConfig
 }
 
-func RunHybridScheduler(
-	requests []models.Request,
-) []Decision {
+func NewHybridStrategy() *HybridStrategy {
+	return &HybridStrategy{
+		cfg: HybridConfig{Alpha: 10, Beta: 1, Gamma: 2},
+	}
+}
 
-	cfg := HybridConfig{Alpha: 10, Beta: 1, Gamma: 2}
+func (s *HybridStrategy) Name() string {
+	return "hybrid"
+}
 
+func (s *HybridStrategy) Schedule(requests []models.Request) []Decision {
 	var decisions []Decision
 	var queue []runtimeRequest
 	clientDebt := map[int]float64{}
@@ -41,12 +44,12 @@ func RunHybridScheduler(
 		}
 
 		sort.Slice(queue, func(i, j int) bool {
-			return computeScore(queue[i], tick, clientDebt, cfg) >
-				computeScore(queue[j], tick, clientDebt, cfg)
+			return computeScore(queue[i], tick, clientDebt, s.cfg) >
+				computeScore(queue[j], tick, clientDebt, s.cfg)
 		})
 
 		selected := queue[0]
-		score := computeScore(selected, tick, clientDebt, cfg)
+		score := computeScore(selected, tick, clientDebt, s.cfg)
 
 		decisions = append(decisions, Decision{
 			Tick:    tick,

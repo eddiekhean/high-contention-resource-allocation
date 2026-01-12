@@ -38,8 +38,17 @@ func (s *SimulateService) RunSimulation(
 	clients := scheduler.GenerateClients(input.Seed, input.TotalClients)
 	requests, arrivalOrder := scheduler.GenerateRequests(clients, input.Seed)
 
-	// 3. Scheduler quyết định thứ tự
-	decisions := scheduler.RunHybridScheduler(requests)
+	// 3. Scheduler selects strategy
+	strategyFactory := scheduler.NewStrategyFactory()
+	strategy := strategyFactory.Get(input.Policy)
+	if strategy == nil {
+		// Fallback or error. For now, defaulting to hybrid if not found, or maybe just error?
+		// Given validation in DTO, input.Policy should be valid.
+		// However, let's default to hybrid if something goes wrong or for "fairness" later.
+		strategy = strategyFactory.Get("hybrid")
+	}
+
+	decisions := strategy.Schedule(requests)
 
 	// 4. Execute decisions
 	var events []models.Event

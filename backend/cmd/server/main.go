@@ -70,7 +70,10 @@ func main() {
 
 	public := r.Group("/api/v1/public")
 	{
-		public.POST("/simulate", simulateHandler.Simulate)
+		simulate := public.Group("/simulate")
+		{
+			simulate.POST("/run", simulateHandler.Simulate)
+		}
 		leetcode := public.Group("/leetcode")
 		{
 			maze := leetcode.Group("/maze")
