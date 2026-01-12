@@ -1,10 +1,10 @@
 package models
 
 type SimulationRequest struct {
-	TotalClients  int    `json:"total_clients" validate:"gt=0"`
-	TotalVouchers int    `json:"total_vouchers" validate:"gt=0"`
+	TotalClients  int    `json:"total_clients" binding:"required,gt=0" validate:"gt=0"`
+	TotalVouchers int    `json:"total_vouchers" binding:"required,gt=0" validate:"gt=0"`
 	Seed          int64  `json:"seed"`
-	Policy        string `json:"policy" validate:"oneof=fifo priority lottery hybrid"`
+	Policy        string `json:"policy" binding:"required,oneof=fifo priority lottery hybrid" validate:"oneof=fifo priority lottery hybrid"`
 }
 type Client struct {
 	ID     int
