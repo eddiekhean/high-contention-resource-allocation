@@ -21,3 +21,16 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "wget -qO- http://localhost:3000/maze/health || exit 1" ]
     restart: always
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --io-threads
+      - "1"
+      - --protected-mode
+      - "no"
