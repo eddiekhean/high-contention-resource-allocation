@@ -35,15 +35,15 @@ jobs:
           tags: |
             dikhean/simulate-api:latest
 
-      # 5. Build & Push maze-generator (multi-arch)
-      - name: Build & Push maze-generator
+      # 5. Build & Push maze-generate (multi-arch)
+      - name: Build & Push maze-generate
         uses: docker/build-push-action@v5
         with:
           context: ./backend/maze_generator
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            dikhean/maze-generator:latest
+            dikhean/maze-generate:latest
 
       # 6. SSH to server & deploy
       - name: Deploy on server
