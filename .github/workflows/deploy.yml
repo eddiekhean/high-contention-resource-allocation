@@ -39,7 +39,7 @@ jobs:
       - name: Build & Push maze-generate
         uses: docker/build-push-action@v5
         with:
-          context: ./backend/maze_generator
+          context: ./backend/maze_generate
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
