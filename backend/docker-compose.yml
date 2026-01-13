@@ -24,7 +24,7 @@ services:
     restart: always
 
   maze-service:
-    image: dikhean/maze-node:latest
+    image: dikhean/maze-generate:latest
     container_name: maze-service
     ports:
       - "3000:3000"
