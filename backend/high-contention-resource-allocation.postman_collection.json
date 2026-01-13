@@ -41,15 +41,16 @@
                             "raw": "{\n    \"total_clients\": 100,\n    \"total_vouchers\": 10,\n    \"seed\": 42,\n    \"policy\": \"fifo\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/v1/api/public/simulate",
+                            "raw": "{{base_url}}/api/v1/public/simulate/run",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "v1",
                                 "api",
+                                "v1",
                                 "public",
-                                "simulate"
+                                "simulate",
+                                "run"
                             ]
                         }
                     },
@@ -71,16 +72,49 @@
                             "raw": "{\n    \"rows\": 20,\n    \"cols\": 20,\n    \"loop_ratio\": 0.5,\n    \"seed\": 12345\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/v1/api/public/leetcode/generate",
+                            "raw": "{{base_url}}/api/v1/public/leetcode/maze/generate",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "v1",
                                 "api",
+                                "v1",
                                 "public",
                                 "leetcode",
+                                "maze",
                                 "generate"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Submit Maze",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rows\": 5,\n    \"cols\": 5,\n    \"start\": {\n        \"x\": 0,\n        \"y\": 0\n    },\n    \"end\": {\n        \"x\": 4,\n        \"y\": 4\n    },\n    \"cells\": [\n        {\n            \"x\": 0,\n            \"y\": 0,\n            \"walls\": {\n                \"top\": true,\n                \"right\": false,\n                \"bottom\": false,\n                \"left\": true\n            }\n        }\n    ],\n    \"strategy\": \"BFS\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/public/leetcode/maze/submit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "public",
+                                "leetcode",
+                                "maze",
+                                "submit"
                             ]
                         }
                     },

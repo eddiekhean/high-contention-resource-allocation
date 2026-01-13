@@ -2,23 +2,21 @@ version: "3.9"
 
 services:
   maze-service:
-    build:
-      context: ./maze_generator
+    image: maze-service:latest
+    container_name: maze-service
     ports:
-      - "8000:8000"
-    volumes:
-      - ./maze_generator:/app
-    command: uvicorn maze.main:app --host 0.0.0.0 --port 8000 --reload
+      - "3000:3000"
     environment:
-      PYTHONUNBUFFERED: "1"
+      NODE_ENV: development
     restart: unless-stopped
 
   redis:
     image: redis:7
-    volumes:
-      - redis-data:/data
+    container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
     command: [ "redis-server", "--appendonly", "yes" ]
     restart: unless-stopped
 
