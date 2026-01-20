@@ -52,5 +52,6 @@ jobs:
             cd /opt/scratchpad/high-contention-resource-allocation/backend
             docker pull dikhean/simulate-api:latest
             docker pull dikhean/maze-generate:latest
-            docker compose down
-            docker compose up -d
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d
+
