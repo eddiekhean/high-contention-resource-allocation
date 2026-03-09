@@ -39,13 +39,18 @@ type MazeServiceConfig struct {
 type CorsConfig struct {
 	AllowedOrigins []string `yaml:"allowed_origins" json:"allowed_origins"`
 }
-
+type JWTConfig struct {
+	PrivateKeyPath string `yaml:"private_key_path" json:"private_key_path"`
+	PublicKeyPath  string `yaml:"public_key_path" json:"public_key_path"`
+	AccessTokenTTL int    `yaml:"access_token_ttl" json:"access_token_ttl"`
+}
 type Config struct {
 	Log         Log               `yaml:"log" json:"log"`
 	RateLimit   RateLimit         `yaml:"rate_limit" json:"rate_limit"`
 	RedisConfig RedisConfig       `yaml:"redis" json:"redis"`
 	MazeService MazeServiceConfig `yaml:"maze_service" json:"maze_service"`
 	Cors        CorsConfig        `yaml:"cors" json:"cors"`
+	JWT         JWTConfig         `yaml:"jwt" json:"jwt"`
 }
 
 // LoadFromFile loads configuration from a specific YAML file
@@ -169,5 +174,17 @@ func overrideFromEnv(cfg *Config) {
 	// CORS
 	if allowedOrigins := os.Getenv("ALLOWED_ORIGINS"); allowedOrigins != "" {
 		cfg.Cors.AllowedOrigins = strings.Split(allowedOrigins, ",")
+	}
+	// JWT
+	if privateKeyPath := os.Getenv("PRIVATE_KEY_PATH"); privateKeyPath != "" {
+		cfg.JWT.PrivateKeyPath = privateKeyPath
+	}
+	if publicKeyPath := os.Getenv("PUBLIC_KEY_PATH"); publicKeyPath != "" {
+		cfg.JWT.PublicKeyPath = publicKeyPath
+	}
+	if accessTokenTTL := os.Getenv("ACCESS_TOKEN_TTL"); accessTokenTTL != "" {
+		if v, err := strconv.Atoi(accessTokenTTL); err == nil {
+			cfg.JWT.AccessTokenTTL = v
+		}
 	}
 }

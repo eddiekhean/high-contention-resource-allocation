@@ -67,7 +67,10 @@ func main() {
 		middleware.CORSMiddleware(cfg.Cors.AllowedOrigins),
 	)
 	r.GET("/health", handler.HealthCheck)
-
+	auth := r.Group("/api/v1/auth")
+	{
+		auth.POST("/login", handler.Login)
+	}
 	public := r.Group("/api/v1/public")
 	{
 		simulate := public.Group("/simulate")

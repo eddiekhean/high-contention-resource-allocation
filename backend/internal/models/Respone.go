@@ -13,3 +13,13 @@ type Event struct {
 	Score     float64
 	Action    string // enqueue | allocated | wait | drop
 }
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+func NewErrorResponse(message string) ErrorResponse {
+	return ErrorResponse{
+		Error: message,
+	}
+}

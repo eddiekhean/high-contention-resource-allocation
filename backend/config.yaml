@@ -28,3 +28,8 @@ cors:
     - "https://www.eddiekhean.site"
     - "https://eddiekhean.site"
     - "https://www.eddiekhean.site/"
+
+jwt:
+  private_key_path: "key/private.pem"
+  public_key_path: "key/public.pem"
+  access_token_ttl: 60
