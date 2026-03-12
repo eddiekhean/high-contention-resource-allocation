@@ -30,6 +30,16 @@ cors:
     - "https://www.eddiekhean.site/"
 
 jwt:
+  signing_method: RS256
   private_key_path: "key/private.pem"
   public_key_path: "key/public.pem"
-  access_token_ttl: 60
+  access_token_ttl: 900
+  refresh_token_ttl: 604800
+
+# Values below are overridden by env vars at runtime (see .env.example)
+postgres:
+  dsn: "" # set via POSTGRES_DSN env var
+
+mongo:
+  uri: ""      # set via MONGO_URI env var
+  database: "app_db"

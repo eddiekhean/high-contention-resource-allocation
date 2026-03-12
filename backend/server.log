@@ -1,0 +1,86 @@
+{"level":"info","msg":"Configuration loaded successfully","time":"2026-03-12T10:20:49.125+07:00"}
+{"level":"info","msg":"redis connected","time":"2026-03-12T10:20:49.143+07:00"}
+{"level":"info","msg":"postgres connected","time":"2026-03-12T10:20:49.152+07:00"}
+{"level":"info","msg":"postgres migrations applied successfully","time":"2026-03-12T10:20:49.162+07:00"}
+{"level":"info","msg":"mongo connected","time":"2026-03-12T10:20:49.171+07:00"}
+{"level":"info","msg":"mongo indexes ensured","time":"2026-03-12T10:20:49.172+07:00"}
+{"level":"info","msg":"JWT manager initialized successfully","time":"2026-03-12T10:20:49.173+07:00"}
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /health                   --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.HealthCheck (5 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/v1/auth/login        --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.(*AuthHandler).Login-fm (5 handlers)
+[GIN-debug] POST   /api/v1/auth/refresh      --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.(*AuthHandler).RefreshToken-fm (5 handlers)
+[GIN-debug] POST   /api/v1/auth/logout       --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.(*AuthHandler).Logout-fm (5 handlers)
+[GIN-debug] POST   /api/v1/public/simulate/run --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.(*SimulateHandler).Simulate-fm (5 handlers)
+[GIN-debug] POST   /api/v1/public/leetcode/maze/submit --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.(*MazeHandler).Submit-fm (5 handlers)
+[GIN-debug] POST   /api/v1/public/leetcode/maze/generate --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.(*MazeHandler).Generate-fm (5 handlers)
+[GIN-debug] GET    /api/v1/protected/health  --> github.com/eddiekhean/high-contention-resource-allocation-backend/internal/handler.HealthCheck (6 handlers)
+{"level":"info","msg":"Server started on :9091","time":"2026-03-12T10:20:49.173+07:00"}
+[GIN] 2026/03/12 - 10:20:50 | 200 | 486.334µs |             ::1 | GET      "/swagger/index.html"
+[GIN] 2026/03/12 - 10:21:33 | 200 |  32.02ms |             ::1 | GET      "/swagger/index.html"
+[GIN] 2026/03/12 - 10:21:34 | 200 |   3.64ms |             ::1 | GET      "/swagger/index.css"
+[GIN] 2026/03/12 - 10:21:34 | 200 |   1.51ms |             ::1 | GET      "/swagger/swagger-initializer.js"
+[GIN] 2026/03/12 - 10:21:34 | 200 |  14.52ms |             ::1 | GET      "/swagger/swagger-ui.css"
+[GIN] 2026/03/12 - 10:21:34 | 200 |   5.64ms |             ::1 | GET      "/swagger/swagger-ui-standalone-preset.js"
+[GIN] 2026/03/12 - 10:21:34 | 200 |  17.46ms |             ::1 | GET      "/swagger/swagger-ui-bundle.js"
+[GIN] 2026/03/12 - 10:21:35 | 200 |   5.19ms |             ::1 | GET      "/swagger/doc.json"
+[GIN] 2026/03/12 - 10:21:35 | 200 | 85.875µs |             ::1 | GET      "/swagger/favicon-32x32.png"
+[GIN] 2026/03/12 - 10:25:47 | 200 |    248ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:25:47 | 200 |  74.81ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:25:47 | 200 |  73.35ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:25:47 | 200 |  77.26ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:25:48 | 200 |  73.37ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:25:48 | 200 |   5.66ms |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:25:48 | 200 |  31.51ms |             ::1 | POST     "/api/v1/auth/logout"
+2026/03/12 10:25:48 JTI validation failed: jti-5d392d34-bf27-4a5f-8656-e8ced49e16bc
+[GIN] 2026/03/12 - 10:25:48 | 401 | 465.416µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:25:48 | 200 |  79.17ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:25:48 | 200 |   3.03ms |             ::1 | POST     "/api/v1/auth/logout"
+[GIN] 2026/03/12 - 10:25:48 | 200 |   2.21ms |             ::1 | POST     "/api/v1/auth/logout"
+[GIN] 2026/03/12 - 10:25:48 | 200 |  78.52ms |             ::1 | POST     "/api/v1/auth/login"
+2026/03/12 10:25:48 JWT validation failed: token signature is invalid: crypto/rsa: verification error
+[GIN] 2026/03/12 - 10:25:48 | 401 | 114.834µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:25:48 | 429 | 845.458µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:26:32 | 200 |  89.48ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:26:32 | 200 |  71.89ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:26:33 | 200 |  71.25ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:26:33 | 200 |  80.33ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:26:33 | 200 |  72.55ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:26:33 | 200 | 785.875µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:26:33 | 200 |   2.23ms |             ::1 | POST     "/api/v1/auth/logout"
+2026/03/12 10:26:33 JTI validation failed: jti-b5800d93-f5a4-4e45-9cc5-40fcc6cc521e
+[GIN] 2026/03/12 - 10:26:33 | 401 | 348.625µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:26:33 | 200 |  71.04ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:26:34 | 200 |   1.37ms |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:26:34 | 200 |   7.92ms |             ::1 | POST     "/api/v1/auth/logout"
+[GIN] 2026/03/12 - 10:26:34 | 200 |   4.81ms |             ::1 | POST     "/api/v1/auth/logout"
+2026/03/12 10:26:34 JTI validation failed: jti-299e57a5-6bb4-4331-876f-a3a035b041f0
+[GIN] 2026/03/12 - 10:26:34 | 401 | 885.584µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:26:34 | 200 |  90.24ms |             ::1 | POST     "/api/v1/auth/login"
+2026/03/12 10:26:35 JWT validation failed: token signature is invalid: crypto/rsa: verification error
+[GIN] 2026/03/12 - 10:26:35 | 401 | 589.042µs |             ::1 | GET      "/api/v1/protected/health"
+2026/03/12 10:26:36 JWT validation failed: token is unverifiable: error while executing keyfunc: unexpected signing method: HS256
+[GIN] 2026/03/12 - 10:26:36 | 401 | 249.708µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:27:59 | 200 | 108.54ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:27:59 | 200 |  73.85ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:28:00 | 200 |  88.16ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:28:00 | 200 |  71.28ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:28:00 | 200 |  70.65ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:28:00 | 200 |   7.07ms |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:28:00 | 200 |   7.12ms |             ::1 | POST     "/api/v1/auth/logout"
+2026/03/12 10:28:00 JTI validation failed: jti-46e668c1-a912-41d2-b533-8d14e31939e7
+[GIN] 2026/03/12 - 10:28:00 | 401 | 767.375µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:28:00 | 200 |  74.39ms |             ::1 | POST     "/api/v1/auth/login"
+[GIN] 2026/03/12 - 10:28:01 | 200 |  970.5µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:28:01 | 200 |   4.04ms |             ::1 | POST     "/api/v1/auth/logout"
+[GIN] 2026/03/12 - 10:28:01 | 200 |   1.41ms |             ::1 | POST     "/api/v1/auth/logout"
+2026/03/12 10:28:01 JTI validation failed: jti-a0335398-02c6-4bd4-b581-f6b2a22ed2a4
+[GIN] 2026/03/12 - 10:28:01 | 401 | 358.292µs |             ::1 | GET      "/api/v1/protected/health"
+[GIN] 2026/03/12 - 10:28:01 | 200 |  97.35ms |             ::1 | POST     "/api/v1/auth/login"
+2026/03/12 10:28:02 JWT validation failed: token signature is invalid: crypto/rsa: verification error
+[GIN] 2026/03/12 - 10:28:02 | 401 |      1ms |             ::1 | GET      "/api/v1/protected/health"
+2026/03/12 10:28:03 JWT validation failed: token is unverifiable: error while executing keyfunc: unexpected signing method: HS256
+[GIN] 2026/03/12 - 10:28:03 | 401 | 255.375µs |             ::1 | GET      "/api/v1/protected/health"

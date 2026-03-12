@@ -1,0 +1,144 @@
+basePath: /
+definitions:
+  github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        description: seconds
+        type: integer
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+    type: object
+  github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.RefreshResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      token_type:
+        type: string
+    type: object
+host: localhost:9091
+info:
+  contact: {}
+  description: API Server for High Contention Resource Allocation app.
+  title: High Contention Resource Allocation API
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate with email + password, receive access & refresh tokens
+      parameters:
+      - description: Credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.ErrorResponse'
+      summary: Login
+      tags:
+      - auth
+  /api/v1/auth/logout:
+    post:
+      description: 'Revoke the current access token (requires Authorization: Bearer
+        <token>)'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.MessageResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout
+      tags:
+      - auth
+  /api/v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Exchange a valid refresh token for a new access token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.RefreshResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_eddiekhean_high-contention-resource-allocation-backend_internal_models.ErrorResponse'
+      summary: Refresh access token
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

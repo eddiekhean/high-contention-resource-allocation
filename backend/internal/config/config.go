@@ -40,9 +40,18 @@ type CorsConfig struct {
 	AllowedOrigins []string `yaml:"allowed_origins" json:"allowed_origins"`
 }
 type JWTConfig struct {
-	PrivateKeyPath string `yaml:"private_key_path" json:"private_key_path"`
-	PublicKeyPath  string `yaml:"public_key_path" json:"public_key_path"`
-	AccessTokenTTL int    `yaml:"access_token_ttl" json:"access_token_ttl"`
+	SigningMethod   string `yaml:"signing_method" json:"signing_method"`
+	PrivateKeyPath  string `yaml:"private_key_path" json:"private_key_path"`
+	PublicKeyPath   string `yaml:"public_key_path" json:"public_key_path"`
+	AccessTokenTTL  int    `yaml:"access_token_ttl" json:"access_token_ttl"`
+	RefreshTokenTTL int    `yaml:"refresh_token_ttl" json:"refresh_token_ttl"`
+}
+type PostgresConfig struct {
+	DSN string `yaml:"dsn" json:"dsn"`
+}
+type MongoConfig struct {
+	URI      string `yaml:"uri" json:"uri"`
+	Database string `yaml:"database" json:"database"`
 }
 type Config struct {
 	Log         Log               `yaml:"log" json:"log"`
@@ -51,6 +60,8 @@ type Config struct {
 	MazeService MazeServiceConfig `yaml:"maze_service" json:"maze_service"`
 	Cors        CorsConfig        `yaml:"cors" json:"cors"`
 	JWT         JWTConfig         `yaml:"jwt" json:"jwt"`
+	Postgres    PostgresConfig    `yaml:"postgres" json:"postgres"`
+	Mongo       MongoConfig       `yaml:"mongo" json:"mongo"`
 }
 
 // LoadFromFile loads configuration from a specific YAML file
@@ -186,5 +197,16 @@ func overrideFromEnv(cfg *Config) {
 		if v, err := strconv.Atoi(accessTokenTTL); err == nil {
 			cfg.JWT.AccessTokenTTL = v
 		}
+	}
+	// PostgreSQL
+	if dsn := os.Getenv("POSTGRES_DSN"); dsn != "" {
+		cfg.Postgres.DSN = dsn
+	}
+	// MongoDB
+	if uri := os.Getenv("MONGO_URI"); uri != "" {
+		cfg.Mongo.URI = uri
+	}
+	if db := os.Getenv("MONGO_DB"); db != "" {
+		cfg.Mongo.Database = db
 	}
 }

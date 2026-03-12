@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS e2ee_keys;

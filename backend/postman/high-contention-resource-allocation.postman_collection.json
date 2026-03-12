@@ -41,15 +41,16 @@
                             "raw": "{\n    \"total_clients\": 100,\n    \"total_vouchers\": 10,\n    \"seed\": 42,\n    \"policy\": \"fifo\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/v1/api/public/simulate",
+                            "raw": "{{base_url}}/api/v1/public/simulate/run",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "v1",
                                 "api",
+                                "v1",
                                 "public",
-                                "simulate"
+                                "simulate",
+                                "run"
                             ]
                         }
                     },
@@ -71,20 +72,174 @@
                             "raw": "{\n    \"rows\": 20,\n    \"cols\": 20,\n    \"loop_ratio\": 0.5,\n    \"seed\": 12345\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/v1/api/public/leetcode/generate",
+                            "raw": "{{base_url}}/api/v1/public/leetcode/maze/generate",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
-                                "v1",
                                 "api",
+                                "v1",
                                 "public",
                                 "leetcode",
+                                "maze",
                                 "generate"
                             ]
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Submit Maze",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rows\": 5,\n    \"cols\": 5,\n    \"start\": {\n        \"x\": 0,\n        \"y\": 0\n    },\n    \"end\": {\n        \"x\": 4,\n        \"y\": 4\n    },\n    \"cells\": [\n        {\n            \"x\": 0,\n            \"y\": 0,\n            \"walls\": {\n                \"top\": true,\n                \"right\": false,\n                \"bottom\": false,\n                \"left\": true\n            }\n        }\n    ],\n    \"strategy\": \"BFS\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/public/leetcode/maze/submit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "public",
+                                "leetcode",
+                                "maze",
+                                "submit"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Auth API",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.access_token) {",
+                                    "    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+                                    "}",
+                                    "if (jsonData.refresh_token) {",
+                                    "    pm.collectionVariables.set(\"refresh_token\", jsonData.refresh_token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"admin@demo.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.access_token) {",
+                                    "    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/refresh",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "refresh"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
                 }
             ]
         }
@@ -112,7 +267,17 @@
     "variable": [
         {
             "key": "base_url",
-            "value": "http://localhost:8080",
+            "value": "http://localhost:9091",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
             "type": "string"
         }
     ]
